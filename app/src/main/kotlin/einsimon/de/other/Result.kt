@@ -49,6 +49,7 @@ inline infix fun <V, E> Result<V, E>.getOrElse(transform: (E) -> V): V {
 
 @OptIn(ExperimentalContracts::class)
 inline infix fun <V, E> Result<V, E>.onSuccessAlso(block: (V) -> Unit): Result<V, E> {
+    contract { callsInPlace(block, InvocationKind.AT_MOST_ONCE)}
     when (this) {
         is Success -> block(value)
         is Error -> Unit

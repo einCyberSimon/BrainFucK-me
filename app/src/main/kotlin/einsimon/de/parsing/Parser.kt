@@ -19,8 +19,7 @@ class Parser(private val tokenizer: TokenizedInput) {
     fun parse(): Result<List<Instruction>, Throwable> {
         val instructionList = mutableListOf<Instruction>()
         while (tokenizer.hasNext()) {
-            val token = tokenizer.next()
-            val currentToken = token.getOrElse { return Error(it) }
+            val currentToken = tokenizer.next().getOrElse { return Error(it) }
             if (currentToken == Token.SQUARE_BRACKET_OPEN) {
                 instructionList.add(parseLoop().getOrElse { return Error(it) })
             } else {
@@ -40,7 +39,7 @@ class Parser(private val tokenizer: TokenizedInput) {
             Token.COMMA -> ReadSymbol
             Token.NOP -> Nop
             Token.SQUARE_BRACKET_OPEN, Token.SQUARE_BRACKET_CLOSE -> null
-        }?.let { instruction: Instruction -> Success(instruction) } ?: Error(IllegalArgumentException(""))
+        }?.let { instruction: Instruction -> Success(instruction) } ?: Error(IllegalArgumentException("Parsed invalid token: $token"))
     }
 
     private fun parseLoop(): Result<Loop, Throwable> {
@@ -53,18 +52,21 @@ class Parser(private val tokenizer: TokenizedInput) {
                 else -> localInstructions.add(parseInstruction(token).getOrElse { return Error(it) })
             }
         }
-        return Error(IllegalStateException("Expected end of loop."))
+        return Error(IllegalStateException("Expected end of loop"))
     }
 
     private fun reduceRepeatedInstructions(instructions: List<Instruction>): List<Instruction> {
-        return instructions.fold(emptyList()) { acc, instruction -> 
+        return instructions.fold(emptyList()) { acc, instruction ->
             when (instruction) {
                 is Nop -> acc
                 is Loop -> acc + listOf(Loop(reduceRepeatedInstructions(instruction.instructions)))
                 is RepeatedInstruction -> {
                     val last = acc.lastOrNull()
-                    if (last is RepeatedInstruction && last::class == instruction::class) last.addInstruction().let { acc }
-                    else acc + listOf(instruction)
+                    if (last is RepeatedInstruction && last::class == instruction::class) {
+                        last.addInstruction().let { acc }
+                    } else {
+                        acc + listOf(instruction)
+                    }
                 }
                 else -> acc + listOf(instruction)
             }
