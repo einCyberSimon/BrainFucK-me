@@ -17,6 +17,7 @@ enum class Token {
     SQUARE_BRACKET_OPEN,
     SQUARE_BRACKET_CLOSE,
     NOP,
+    HASHTAG,
     ;
 
     companion object {
@@ -30,6 +31,7 @@ enum class Token {
                 ',' -> COMMA
                 '[' -> SQUARE_BRACKET_OPEN
                 ']' -> SQUARE_BRACKET_CLOSE
+                '#' -> HASHTAG
                 else -> NOP
             }.let { Success(it) }
         }

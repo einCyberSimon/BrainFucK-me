@@ -28,6 +28,13 @@ data object Nop : SimpleInstruction() {
     override fun execute(state: State): Result<State, Throwable> = Success(state)
 }
 
+data object DebugInstruction : SimpleInstruction() {
+    override fun execute(state: State): Result<State, Throwable> {
+        state.dumpState()
+        return Success(state)
+    }
+}
+
 sealed class RepeatedInstruction(var amount: Int) : Instruction {
     fun addInstruction() {
         amount++

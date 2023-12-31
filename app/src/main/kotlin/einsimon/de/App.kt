@@ -16,7 +16,6 @@ fun main() {
         instructions.map { instr ->
             Executor(instr).runCode("")
         }
-    println()
     when (result) {
         is Success -> println("Execution Successful")
         is Error -> println("Execution Failed with ${result.error}")

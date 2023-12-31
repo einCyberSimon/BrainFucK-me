@@ -10,6 +10,7 @@ import einsimon.de.execution.Nop
 import einsimon.de.execution.OutputSymbol
 import einsimon.de.execution.ReadSymbol
 import einsimon.de.execution.RepeatedInstruction
+import einsimon.de.execution.DebugInstruction
 import einsimon.de.other.Error
 import einsimon.de.other.Result
 import einsimon.de.other.Success
@@ -38,6 +39,7 @@ class Parser(private val tokenizer: TokenizedInput) {
             Token.DOT -> OutputSymbol
             Token.COMMA -> ReadSymbol
             Token.NOP -> Nop
+            Token.HASHTAG -> DebugInstruction
             Token.SQUARE_BRACKET_OPEN, Token.SQUARE_BRACKET_CLOSE -> null
         }?.let { instruction: Instruction -> Success(instruction) } ?: Error(IllegalArgumentException("Parsed invalid token: $token"))
     }

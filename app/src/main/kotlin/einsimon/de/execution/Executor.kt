@@ -8,7 +8,7 @@ class Executor(private val instructions: List<Instruction>) {
     fun runCode(input: String): Result<State, Throwable> {
         val currentState: Result<State, Throwable> = Success(StartingState(input))
         return instructions.fold(currentState) { state, instruction ->
-            state.flatMap { s -> instruction.execute(s).also { s.dumpState() } }
+            state.flatMap { s -> instruction.execute(s) }
         }
     }
 }
